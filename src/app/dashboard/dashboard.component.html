@@ -1,0 +1,16 @@
+<div class="main-content">
+  <div class="row">
+    <div class="col-lg-12">
+      <app-work-order></app-work-order>
+    </div>
+    <div class="col-lg-12">
+      <app-appointments></app-appointments>
+    </div>
+    <div class="col-lg-12">
+      <app-repair-appointments></app-repair-appointments>
+    </div>
+    <div class="col-lg-12" *ngIf="app.user.title === 'Admin'">
+      <app-invoice></app-invoice>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,299 @@
+<div [ngClass]="{'main-content': data}">
+    <div [ngClass]="{'row': data}">
+        <div [ngClass]="{'col-lg-12': data}">
+
+            <div class="card card-chart">
+                <div class="card-header">
+                    <h4 class="card-title">Appointments</h4>
+                    <!-- <div ngbDropdown>
+                        <button type="button"
+                            (click)="isEdit = true; record = addRecord; dialogTitle = 'Add Work Order'"
+                            class="btn dropdown-menu-righ btn-round btn-default dropdown-toggle btn-simple btn-icon no-caret">
+                            <i class="now-ui-icons ui-1_simple-add"></i>
+                        </button>
+                        <div ngbDropdownMenu class="dropdown-menu-right"> </div>
+                    </div> -->
+                </div>
+                <div class="card-body">
+
+                    <div style="width:100%; margin: 10px 0px;">
+                        <div style="width: 20px; display: inline-block;">
+                            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                        </div>
+                        <div style="width: calc(100% - 21px); display: inline-block;">
+                            <input type="text" style="width:100%"  class="form-control" placeholder="Global Filter" [(ngModel)]="search" >
+                        </div>                        
+                    </div>
+                    <p-table [value]="app.appointments | filterAppointments:search" [paginator]="true" [rows]="10" dataKey="id" autoLayout="true"
+                        rowExpandMode="single">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th style="width: 3em"></th>
+                                <th>Order #</th>
+                                <th>Full Name</th>
+                                <th>Phone</th>
+                                <th>Technician</th>
+                                <th>Status</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-data let-expanded="expanded">
+                            <tr>
+                                <td>
+                                    <a href="#" [pRowToggler]="data">
+                                        <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                                    </a>
+                                </td>
+                                <td>{{data.id}}</td>
+                                <td>{{data.first_name + ", " + data.last_name}}</td>
+                                <td>{{data.phone}}</td>
+                                <td>{{data.ufname + ", " + data.ulname}}</td>
+                                <td>{{data.statusStr}}</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="rowexpansion" let-data let-columns="columns">
+                            <tr>
+                                <td colspan="5">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <strong>Change Work Status:</strong><br>
+                                            <select id="workStatus" name="workStatus" (change)="changeStatus(data)"
+                                                style="width: 200px; font-weight: bold; border: 1px solid lightgray; padding:5px;">
+                                                <option [selected]="s.id == data.status" *ngFor="let s of app.status"
+                                                    value="{{s.id}}">{{s.status}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <strong>Work Address:</strong> <br>
+                                            {{data.address}}
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <strong>Work Type:</strong> <br>
+                                            {{data.typeStr}}
+                                            <!-- <select id="workType" name="workType" (change)="changeType(data)"
+                                                style="width: 200px; font-weight: bold; border: 1px solid lightgray; padding:5px;">
+                                                <option [selected]="s.id == data.type" *ngFor="let s of app.type"
+                                                    value="{{s.id}}">{{s.type}}</option>
+                                            </select> -->
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <strong>Visit Date:</strong> <br>
+                                            {{data.date.split('-')[1] + '/' + data.date.split('-')[2] + '/' + data.date.split('-')[0]}}
+                                        </div>
+                                        <div class="col-sm-6" *ngIf="data.phone1">
+                                            <strong>Visit Time:</strong> <br>
+                                            {{data.time}}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <strong>Work Email:</strong> <br>
+                                            {{data.email}}
+                                        </div>
+                                        <div class="col-sm-6" *ngIf="data.phone1">
+                                            <strong>Work Alternative Phone:</strong> <br>
+                                            {{data.phone1}}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <strong>Make:</strong> <br>
+                                            {{data.make}}
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <strong>Model Number:</strong> <br>
+                                            {{data.model}}
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <strong>Comments:</strong> <br>
+                                            <!-- <textarea (change)="changeStatus(data)" name="" id="" cols="30" rows="10" [(ngModel)]="data.comments"></textarea> -->
+                                            {{data.comments}}
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <strong>Serial Number:</strong> <br>
+                                            {{data.serial}}
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top:10px;">
+                                        <div class="col-sm-12">
+                                            <div>
+                                                <button pButton style="margin-top: 2px;" type="button" (click)="app.openInvoice(data); this.invoiceTitle=''"
+                                                    label="Generate Invoice"></button>&nbsp;
+                                                <button pButton style="margin-top: 2px;" type="button" (click)="edit(data)"
+                                                    label="Edit"></button>
+                                                &nbsp;
+                                                <button pButton style="margin-top: 2px;" (click)="deleteConfirm(data)" class="ui-button-danger"
+                                                    type="button" label="Delete"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="5">
+                                    No records found
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <a style="cursor: pointer; color:#f96332" (click)="app.loadWorkorders()"> <i
+                                class="now-ui-icons arrows-1_refresh-69"></i></a> Update
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-dialog header="{{dialogTitle}}" [(visible)]="isEdit" [modal]="true" [responsive]="true"
+    [style]="{width: '95%', minWidth: '200px'}" [maximizable]="true" [baseZIndex]="10000">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Visit Date</label>
+                <input type="date" class="form-control" [(ngModel)]="record.date">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Visit Time</label>
+                <!-- style="width: 100%; border-radius: 25px; font-weight: bold; border: 1px solid lightgray; padding:5px;" -->
+                <select id="visitTime" name="visitTime" class="form-control">
+                    <option [selected]="s == record.time" *ngFor="let s of app.times" value="{{s}}">
+                        {{s}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" class="form-control" [(ngModel)]="record.first_name">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" class="form-control" [(ngModel)]="record.last_name">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Address</label>
+                <input type="text" class="form-control" [(ngModel)]="record.address">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="text" class="form-control" [(ngModel)]="record.email">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Make</label>
+                <input type="text" class="form-control" [(ngModel)]="record.make">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="email">Model Number</label>
+                <input type="text" class="form-control" [(ngModel)]="record.model">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Serial Number</label>
+                <input type="text" class="form-control" [(ngModel)]="record.serial">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="email">Status</label>
+                <select id="workStatusS" name="workStatusS" class="form-control">
+                    <option [selected]="s.id == record.status" *ngFor="let s of app.status" value="{{s.id}}">
+                        {{s.status}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Assign Technician</label>
+                <select id="technicianS" name="technicianS" class="form-control">
+                    <option [selected]="s.id == record.technician" *ngFor="let s of app.employees" value="{{s.id}}">
+                        {{s.first_name + ', ' + s.last_name}}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="email">Type</label>
+                <select id="workTypeS" name="workTypeS" class="form-control">
+                    <option [selected]="s.id == record.type" *ngFor="let s of app.type" value="{{s.id}}">{{s.type}}
+                    </option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" class="form-control" [(ngModel)]="record.phone">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <label>Alternate Phone Number</label>
+                <input type="text" class="form-control" [(ngModel)]="record.phone1">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label>Comments</label>
+                <textarea class="form-control" [(ngModel)]="record.comments"></textarea>
+            </div>
+        </div>
+    </div>
+    <p-footer>
+        <button type="button" pButton label="Save" (click)="save()"></button>
+        <button type="button" pButton (click)="isEdit=false" label="Cancel" class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>
+
+<p-dialog header="Delete Work Order" [(visible)]="delConfirm" [modal]="true" [responsive]="true"
+    [style]="{width: '95%', minWidth: '200px'}" [maximizable]="true" [baseZIndex]="10000">
+    <div class="row">
+        <div class="col-md-12">
+            <div style="font-size: large; text-align: center;">
+                Delete This Record?
+            </div>
+        </div>
+    </div>
+    <p-footer>
+        <button type="button" pButton class="ui-button-danger" label="Delete" (click)="del()"></button>
+        <button type="button" pButton (click)="delConfirm=false" label="Cancel" class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>

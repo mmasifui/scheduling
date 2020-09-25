@@ -1,0 +1,107 @@
+<div [ngClass]="{'main-content': app.data}">
+    <div [ngClass]="{'row': app.data}">
+        <div [ngClass]="{'col-lg-12': app.data}">
+
+            <div class="card card-chart">
+                <div class="card-header">
+                    <h4 class="card-title">Invoices</h4>
+                    <div ngbDropdown>
+                        <button type="button" (click)="app.openInvoice(null); app.invoiceTitle = 'Add New Invoice'"
+                            class="btn dropdown-menu-righ btn-round btn-default dropdown-toggle btn-simple btn-icon no-caret">
+                            <i class="now-ui-icons ui-1_simple-add"></i>
+                        </button>
+                        <div ngbDropdownMenu class="dropdown-menu-right">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                            <a class="dropdown-item text-danger" href="#">Remove Data</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div style="width:100%; margin: 10px 0px;">
+                        <div style="width: 20px; display: inline-block;">
+                            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                        </div>
+                        <div style="width: calc(100% - 21px); display: inline-block;">
+                            <input type="text" style="width:100%"  class="form-control" placeholder="Global Filter" [(ngModel)]="search" >
+                        </div>                        
+                    </div>
+                    <p-table [value]="app.invoices | filterInvoices:search" [paginator]="true" [rows]="10" dataKey="id" autoLayout="true"
+                        rowExpandMode="single">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th style="width: 3em"></th>
+                                <th>Invoice #</th>
+                                <th>Order #</th>
+                                <th>Order Date</th>
+                                <th>Full Name</th>
+                                <th>Amount Due</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-data let-expanded="expanded">
+                            <tr>
+                                <td>
+                                    <a href="#" [pRowToggler]="data">
+                                        <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                                    </a>
+                                </td>
+                                <td>{{data.id}}</td>
+                                <td>{{data.order_id}}</td>
+                                <td>{{data.date}}</td>
+                                <td>{{data.order_receiver_name}}</td>
+                                <td>{{data.order_total_amount_due}}</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="rowexpansion" let-data let-columns="columns">
+                            <tr>
+                                <td colspan="5">
+                                    <div>Total After Tax: <br> <strong>{{data.order_total_after_tax}}</strong> </div>
+                                    <div>Address: <br> <strong>{{data.order_receiver_address}}</strong> </div>
+                                    <div *ngIf="data.id !== app.user.id" style="margin-top:10px;">
+                                        <button pButton style="margin-top: 2px;" type="button" (click)="app.printInvoice(data, data.items)"
+                                            label="Print"></button>
+                                        &nbsp;
+                                        <button pButton style="margin-top: 2px;" type="button" (click)="app.editInvoice(data)"
+                                            label="Edit"></button>
+                                        &nbsp;
+                                        <button pButton style="margin-top: 2px;" (click)="deleteConfirm(data)" class="ui-button-danger"
+                                            type="button" label="Delete"></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="5">
+                                    No records found
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <a style="cursor: pointer; color:#f96332" (click)="app.loadInvoices()"> <i
+                            class="now-ui-icons arrows-1_refresh-69"></i></a> Update
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p-dialog header="Delete Work Order" [(visible)]="delConfirm" [modal]="true" [responsive]="true"
+    [style]="{width: '95%', minWidth: '200px'}" [maximizable]="true" [baseZIndex]="10000">
+    <div class="row">
+        <div class="col-md-12">
+            <div style="font-size: large; text-align: center;">
+                Delete This Record?
+            </div>
+        </div>
+    </div>
+    <p-footer>
+        <button type="button" pButton class="ui-button-danger" label="Delete" (click)="del()"></button>
+        <button type="button" pButton (click)="delConfirm=false" label="Cancel" class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>

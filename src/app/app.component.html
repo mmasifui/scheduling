@@ -1,0 +1,168 @@
+<p-toast baseZIndex="999999" position="top-center"></p-toast>
+<div class="wrapper">
+  <div class="sidebar" data-color="red" *ngIf="user">
+    <app-sidebar></app-sidebar>
+  </div>
+  <div [ngClass]="user ? 'main-panel' : 'main-panel-login'">
+    <app-navbar></app-navbar>
+    <div class="panel-header">
+      <div class="header text-center">
+        <h2 class="title"><span style="color:red"> AZA</span>Scheduling</h2>
+        <p class="category">Schedule your
+          <a>Appointments.</a>
+        </p>
+      </div>
+    </div>
+    <router-outlet></router-outlet>
+    <app-footer></app-footer>
+  </div>
+</div>
+
+<p-dialog header="Invoice" [(visible)]="isInvoice" [modal]="true" [responsive]="true"
+  [style]="{width: '95%'}" [maximizable]="true" [baseZIndex]="10000">
+  <div class="container content-invoice" *ngIf="user && tempInvoice">
+    <div class="row">
+      <div class="col-sm-6">
+        <h3>From,</h3>
+        {{user.first_name + ',' + user.last_name}}<br>
+        {{user.address}}<br>
+        {{user.phone}}<br>
+        {{user.email}}
+      </div>
+      <div class="col-sm-6 pull-right">
+        <h3>To,</h3>
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Company Name"
+            [(ngModel)]="tempInvoice.order_receiver_name" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Company Address"
+            [(ngModel)]="tempInvoice.order_receiver_address" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Company Email"
+            [(ngModel)]="tempInvoice.order_receiver_email" autocomplete="off">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        Date: {{tempInvoice.date}}
+      </div>
+      <div class="col-sm-12">
+        <div class="form-group" style="width: 100%;">
+          <label for="">Order #:</label>
+          <input type="text" class="form-control" style="width: 150px; display: inline-block; margin-left: 10px;" placeholder="Order Number"
+            [(ngModel)]="tempInvoice.order_id" autocomplete="off">
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <p-table [value]="tempItems" autoLayout="true" class="invoiceTB">
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3em"> <i class="fa fa-trash-o" aria-hidden="true"></i> </th>
+              <th style="min-width: 100px !important">Item #</th>
+              <th style="min-width: 250px !important">Item Name</th>
+              <th style="min-width: 100px !important">Quantity</th>
+              <th style="min-width: 100px !important">Price</th>
+              <th style="min-width: 100px !important">Total</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item let-i="rowIndex">
+            <tr>
+              <td><i class="fa fa-trash-o" (click)="delItemRow(i)" style="cursor: pointer; color:#f96332"
+                  aria-hidden="true"></i></td>
+              <td><input type="text" [(ngModel)]="tempItems[i].item_code" class="form-control" autocomplete="off"></td>
+              <td><input type="text" [(ngModel)]="tempItems[i].item_name" class="form-control" autocomplete="off"></td>
+              <td><input type="number" (change)="itemChanged()" [(ngModel)]="tempItems[i].order_item_quantity"
+                  class="form-control quantity" autocomplete="off">
+              </td>
+              <td><input type="number" (change)="itemChanged()" [(ngModel)]="tempItems[i].order_item_price"
+                  class="form-control price" autocomplete="off"></td>
+              <td><input type="number" style="color: black;" disabled [(ngModel)]="tempItems[i].order_item_final_amount"
+                  class="form-control total" autocomplete="off"></td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 10px;">
+      <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+        <button pButton (click)="addItemRow()" type="button" label="Add Row"></button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-8">
+        <br>
+        <h3>Notes: </h3>
+        <div class="form-group">
+          <textarea class="form-control txt" rows="5" name="notes" id="notes" placeholder="Your Notes"
+            [(ngModel)]="tempInvoice.note"></textarea>
+        </div>
+      </div>
+      <div class="col-sm-4 pull-right">
+        <div style="margin-bottom: 5px; height: 40px;">
+          <div class="pull-left">
+            <label style="vertical-align: sub;">Subtotal: $</label>
+          </div>
+          <div class="pull-right" style="width: 160px;">
+            <input value="" type="number" class="form-control" name="subTotal" id="subTotal"
+              (change)="subTotalChanged()" placeholder="Subtotal" [(ngModel)]="tempInvoice.order_total_before_tax">
+          </div>
+        </div>
+        <div style="margin-bottom: 5px; height: 40px;">
+          <div class="pull-left">
+            <label style="vertical-align: sub;">Tax Rate: %</label>
+          </div>
+          <div class="pull-right" style="width: 160px;">
+            <input value="" type="number" class="form-control" (change)="subTotalChanged()" name="taxRate" id="taxRate"
+              placeholder="Tax Rate" [(ngModel)]="tempInvoice.order_tax_per">
+          </div>
+        </div>
+        <div style="margin-bottom: 5px; height: 40px;">
+          <div class="pull-left">
+            <label style="vertical-align: sub;">Tax Amount: $</label>
+          </div>
+          <div class="pull-right" style="width: 160px;">
+            <input value="" type="number" class="form-control" style="color: black;" disabled name="taxAmount"
+              id="taxAmount" placeholder="Tax Amount" [(ngModel)]="tempInvoice.order_total_tax">
+          </div>
+        </div>
+        <div style="margin-bottom: 5px; height: 40px;">
+          <div class="pull-left">
+            <label style="vertical-align: sub;">Total: $</label>
+          </div>
+          <div class="pull-right" style="width: 160px;">
+            <input value="" type="number" class="form-control" style="color: black;" disabled name="totalAftertax"
+              id="totalAftertax" [(ngModel)]="tempInvoice.order_total_after_tax" placeholder="Total">
+          </div>
+        </div>
+        <div style="margin-bottom: 5px; height: 40px;">
+          <div class="pull-left">
+            <label style="vertical-align: sub;">Amount Paid: $</label>
+          </div>
+          <div class="pull-right" style="width: 160px;">
+            <input value="" type="number" class="form-control" (change)="subTotalChanged()" name="amountPaid"
+              id="amountPaid" [(ngModel)]="tempInvoice.order_amount_paid" placeholder="Amount Paid">
+          </div>
+        </div>
+        <div style="margin-bottom: 5px; height: 40px;">
+          <div class="pull-left">
+            <label style="vertical-align: sub;">Amount Due: $</label>
+          </div>
+          <div class="pull-right" style="width: 160px;">
+            <input value="" type="number" class="form-control" style="color: black;" disabled name="amountDue"
+              id="amountDue" placeholder="Amount Due" [(ngModel)]="tempInvoice.order_total_amount_due">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p-footer>
+    <button type="button" style="margin-top: 2px;" pButton label="Print"
+      (click)="printInvoice(tempInvoice, tempItems)"></button>
+    <button type="button" style="margin-top: 2px;" pButton label="Save & Email Invoice" (click)="createInvoice()"></button>
+    <button type="button" style="margin-top: 2px;" *ngIf="invoiceTitle == 'Edit Invoice'" pButton label="Email Invoice" (click)="emailInvoice()"></button>
+    <button type="button" style="margin-top: 2px;" pButton (click)="isInvoice=false;" label="Cancel" class="ui-button-secondary"></button>    
+  </p-footer>
+</p-dialog>

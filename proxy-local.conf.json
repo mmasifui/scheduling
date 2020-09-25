@@ -1,0 +1,14 @@
+{
+    "/api/*": {
+        "target": "http://192.168.2.21:8080",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    },
+    "/piwik/*": {
+        "target": "http://206.205.101.39",
+        "secure": false,
+        "logLevel": "debug",
+        "changeOrigin": true
+    }
+  }

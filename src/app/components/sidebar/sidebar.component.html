@@ -1,0 +1,16 @@
+
+<div class="logo" *ngIf="app.data !== 'login'">    
+    <a href="http://aza.m-asif.com" class="simple-text logo-normal" style="font-size: 21px;">
+        <span style="color:black">AZA</span> Scheduling
+    </a>
+</div>
+<div class="sidebar-wrapper" *ngIf="app.data !== 'login'">
+    <ul class="nav" style="font-size: 19px;">
+        <li routerLinkActive="active" *ngFor="let menuItem of menuItems" class="{{menuItem.class}} nav-item">
+            <a [routerLink]="[menuItem.path]">
+                <i class="now-ui-icons {{menuItem.icon}}"></i>
+                <p>{{menuItem.title}}</p>
+            </a>
+        </li>
+    </ul>
+</div>
