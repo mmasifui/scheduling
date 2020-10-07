@@ -8,9 +8,7 @@ export class AppService {
     private apiUrl: string;
 
     constructor(private http: HttpClient) {
-        // this.apiUrl = "http://localhost/smartScheduling/api";
-        this.apiUrl = "http://aza.m-asif.com/api";
-        // this.apiUrl = "https://azaservices.org/api";
+        this.apiUrl = "https://azaservices.org/api";
         localStorage.getItem('user');
     }
 
